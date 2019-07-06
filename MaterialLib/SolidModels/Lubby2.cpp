@@ -78,7 +78,7 @@ Lubby2<DisplacementDim>::integrateStress(
     KelvinVector const& sigma_prev,
     typename MechanicsBase<DisplacementDim>::MaterialStateVariables const&
         material_state_variables,
-    double const /*T*/) const
+    double const T) const
 {
     using Invariants = MathLib::KelvinVector::Invariants<KelvinVectorSize>;
 
@@ -103,7 +103,7 @@ Lubby2<DisplacementDim>::integrateStress(
 
     // Calculate effective stress and update material properties
     double sig_eff = Invariants::equivalentStress(sigd_j);
-    local_lubby2_properties.update(sig_eff);
+    local_lubby2_properties.update(sig_eff, T);
 
     using LocalJacobianMatrix =
         Eigen::Matrix<double, KelvinVectorSize * 3, KelvinVectorSize * 3,
@@ -156,7 +156,7 @@ Lubby2<DisplacementDim>::integrateStress(
             // Calculate effective stress and update material properties
             sig_eff = MathLib::KelvinVector::Invariants<
                 KelvinVectorSize>::equivalentStress(sigd_j);
-            local_lubby2_properties.update(sig_eff);
+            local_lubby2_properties.update(sig_eff, T);
         };
 
         auto newton_solver = NumLib::NewtonRaphson<
@@ -183,16 +183,16 @@ Lubby2<DisplacementDim>::integrateStress(
     }
 
     KelvinMatrix C =
-        tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM0,
-                                           local_lubby2_properties.KM0,
+        tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM,
+                                           local_lubby2_properties.KM,
                                            dt,
                                            linear_solver);
 
     // Hydrostatic part for the stress and the tangent.
     double const delta_eps_trace = Invariants::trace(eps - eps_prev);
     double const sigma_trace_prev = Invariants::trace(sigma_prev);
-    KelvinVector const sigma = local_lubby2_properties.GM0 * sigd_j +
-                               (local_lubby2_properties.KM0 * delta_eps_trace +
+    KelvinVector const sigma = local_lubby2_properties.GM * sigd_j +
+                               (local_lubby2_properties.KM * delta_eps_trace +
                                 sigma_trace_prev / 3.) *
                                    Invariants::identity2;
     return {std::make_tuple(

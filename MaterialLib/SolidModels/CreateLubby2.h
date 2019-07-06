@@ -93,11 +93,45 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
     DBUG("Use '%s' as dependency parameter mvM.",
          dependency_parameter_mvM.name.c_str());
 
+    // Dependency parameter for Tref
+    auto& dependency_parameter_Tref = ParameterLib::findParameter<double>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_Tref}
+        config, "dependency_parameter_tref", parameters, 1);
+    
+    DBUG("Use '%s' as dependency parameter Tref.",
+         dependency_parameter_Tref.name.c_str());
+
+    // Dependency parameter for mGT
+    auto& dependency_parameter_mGT = ParameterLib::findParameter<double>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_mGT}
+        config, "dependency_parameter_mgt", parameters, 1);
+    
+    DBUG("Use '%s' as dependency parameter mGT.",
+         dependency_parameter_mGT.name.c_str());
+
+    // Dependency parameter for mKT
+    auto& dependency_parameter_mKT = ParameterLib::findParameter<double>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_mKT}
+        config, "dependency_parameter_mkt", parameters, 1);
+    
+    DBUG("Use '%s' as dependency parameter mKT.",
+         dependency_parameter_mKT.name.c_str());
+
+    // Dependency parameter for Q
+    auto& dependency_parameter_Q = ParameterLib::findParameter<double>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_Q}
+        config, "dependency_parameter_q", parameters, 1);
+    
+    DBUG("Use '%s' as dependency parameter Q.",
+         dependency_parameter_Q.name.c_str());
+
     Lubby2MaterialProperties mp{
         kelvin_shear_modulus,     maxwell_shear_modulus,
         maxwell_bulk_modulus,     kelvin_viscosity,
         maxwell_viscosity,        dependency_parameter_mK,
-        dependency_parameter_mvK, dependency_parameter_mvM};
+        dependency_parameter_mvK, dependency_parameter_mvM,
+        dependency_parameter_Tref, dependency_parameter_mGT,
+        dependency_parameter_mKT, dependency_parameter_Q};
 
     auto const& nonlinear_solver_config =
         //! \ogs_file_param{material__solid__constitutive_relation__Lubby2__nonlinear_solver}
