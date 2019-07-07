@@ -118,6 +118,7 @@ struct LocalLubby2Properties
 
     void update(double const s_eff, double const T)
     {
+        const double dT(T - Tref);
         double const GM0_s_eff = GM0 * s_eff;
         GK = GK0 * std::exp(mK * GM0_s_eff);
         etaK = etaK0 * std::exp(mvK * GM0_s_eff);
@@ -129,9 +130,9 @@ struct LocalLubby2Properties
         }
         else
         {
-            etaM = etaM0 * std::exp(mvM * GM0_s_eff) * std::exp(Q * (Tref - T)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
-            KM = KM0 + mKT * (T - Tref);
-            GM = GM0 + mGT * (T - Tref);
+            etaM = etaM0 * std::exp(mvM * GM0_s_eff) * std::exp(Q * (-dT)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
+            KM = KM0 + mKT * dT;
+            GM = GM0 + mGT * dT;
         }
     }
 
