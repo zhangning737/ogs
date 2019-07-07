@@ -118,7 +118,7 @@ struct LocalLubby2Properties
 
     void update(double const s_eff, double const T)
     {
-        const double dT(T - Tref);
+        double const dT(T - Tref);
         double const GM0_s_eff = GM0 * s_eff;
         GK = GK0 * std::exp(mK * GM0_s_eff);
         etaK = etaK0 * std::exp(mvK * GM0_s_eff);
