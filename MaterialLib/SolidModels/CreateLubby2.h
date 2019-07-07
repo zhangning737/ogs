@@ -11,7 +11,6 @@
 
 #include "CreateNewtonRaphsonSolverParameters.h"
 #include "ParameterLib/Utils.h"
-#include <iostream>
 
 #include "Lubby2.h"
 
