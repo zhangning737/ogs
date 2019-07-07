@@ -17,6 +17,10 @@
                 <dependency_parameter_mk>mK</dependency_parameter_mk>
                 <dependency_parameter_mvk>mvK</dependency_parameter_mvk>
                 <dependency_parameter_mvm>mvM</dependency_parameter_mvm>
+                <dependency_parameter_mgt>mGT</dependency_parameter_mgt>
+                <dependency_parameter_mkt>mvM</dependency_parameter_mkt>
+                <dependency_parameter_q>QQQ</dependency_parameter_q>
+                <dependency_parameter_tref>hahaha</dependency_parameter_tref>
                 <nonlinear_solver>
                     <maximum_iterations>20</maximum_iterations>
                     <error_tolerance>1e-10</error_tolerance>
@@ -81,6 +85,26 @@
         </output>
     </time_loop>
     <parameters>
+        <parameter>
+            <name>hahaha</name>
+            <type>Constant</type>
+            <value>298.0</value>
+        </parameter>
+        <parameter>
+            <name>mGT</name>
+            <type>Constant</type>
+            <value>-0.1</value>
+        </parameter>
+        <parameter>
+            <name>mKT</name>
+            <type>Constant</type>
+            <value>-0.1</value>
+        </parameter>
+        <parameter>
+            <name>QQQ</name>
+            <type>Constant</type>
+            <value>1.6e4</value>
+        </parameter>
         <parameter>
             <name>GK0</name>
             <type>Constant</type>

@@ -98,9 +98,18 @@ struct LocalLubby2Properties
         double const GM0_s_eff = GM0 * s_eff;
         GK = GK0 * std::exp(mK * GM0_s_eff);
         etaK = etaK0 * std::exp(mvK * GM0_s_eff);
-        etaM = etaM0 * std::exp(mvM * GM0_s_eff) * std::exp(Q * (Tref - T)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
-        KM = KM0 + mKT * (T - Tref);
-        GM = GM0 + mGT * (T - Tref);
+        if (std::isnan(T))
+        {
+            etaM = etaM0 * std::exp(mvM * GM0_s_eff);
+            KM = KM0;
+            GM = GM0;
+        }
+        else
+        {
+            etaM = etaM0 * std::exp(mvM * GM0_s_eff) * std::exp(Q * (Tref - T)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
+            KM = KM0 + mKT * (T - Tref);
+            GM = GM0 + mGT * (T - Tref);
+        }
     }
 
     void update(double const s_eff)
