@@ -55,6 +55,29 @@ struct Lubby2MaterialProperties
     {
     }
 
+    Lubby2MaterialProperties(P const& GK0_,
+                             P const& GM0_,
+                             P const& KM0_,
+                             P const& etaK0_,
+                             P const& etaM0_,
+                             P const& mK_,
+                             P const& mvK_,
+                             P const& mvM_)
+        : GK0(GK0_),
+          GM0(GM0_),
+          KM0(KM0_),
+          etaK0(etaK0_),
+          etaM0(etaM0_),
+          mK(mK_),
+          mvK(mvK_),
+          mvM(mvM_),
+          Tref(mvM_), // Initial with null parameter
+          mGT(mvM_),  // Initial with null parameter
+          mKT(mvM_),  // Initial with null parameter
+          Q(mvM_)     // Initial with null parameter
+    {
+    }
+
     // basic material parameters
     P const& GK0;
     P const& GM0;
