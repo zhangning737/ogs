@@ -71,10 +71,10 @@ struct Lubby2MaterialProperties
           mK(mK_),
           mvK(mvK_),
           mvM(mvM_),
-          Tref(mvM_), // Initial with null parameter
-          mGT(mvM_),  // Initial with null parameter
-          mKT(mvM_),  // Initial with null parameter
-          Q(mvM_)     // Initial with null parameter
+          Tref(mvM_), // ToDo Initial with empty parameter
+          mGT(mvM_),  // ToDo Initial with empty parameter
+          mKT(mvM_),  // ToDo Initial with empty parameter
+          Q(mvM_)     // ToDo Initial with empty parameter
     {
     }
 
