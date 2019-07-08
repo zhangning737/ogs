@@ -93,7 +93,7 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
 
     DBUG("Use '%s' as dependency parameter mvM.",
          dependency_parameter_mvM.name.c_str());
-    
+
     auto const dependency_parameter_tref_name = config.getConfigParameterOptional<std::string>("dependency_parameter_tref");
 
     auto const dependency_parameter_mgt_name = config.getConfigParameterOptional<std::string>("dependency_parameter_mgt");
@@ -105,26 +105,26 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
     if(dependency_parameter_tref_name && dependency_parameter_mgt_name && dependency_parameter_mkt_name && dependency_parameter_q_name)
     {
         // Dependency parameter for Tref
-        auto& dependency_parameter_Tref = ParameterLib::findParameter<double>(*dependency_parameter_tref_name, parameters, 1); 
-        
+        auto& dependency_parameter_Tref = ParameterLib::findParameter<double>(*dependency_parameter_tref_name, parameters, 1);
+
         DBUG("Use '%s' as dependency parameter Tref.",
          dependency_parameter_Tref.name.c_str());
 
         // Dependency parameter for mGT
-        auto& dependency_parameter_mGT = ParameterLib::findParameter<double>(*dependency_parameter_mgt_name, parameters, 1); 
-        
+        auto& dependency_parameter_mGT = ParameterLib::findParameter<double>(*dependency_parameter_mgt_name, parameters, 1);
+
         DBUG("Use '%s' as dependency parameter mGT.",
             dependency_parameter_mGT.name.c_str());
 
         // Dependency parameter for mKT
-        auto& dependency_parameter_mKT = ParameterLib::findParameter<double>(*dependency_parameter_mkt_name, parameters, 1); 
-        
+        auto& dependency_parameter_mKT = ParameterLib::findParameter<double>(*dependency_parameter_mkt_name, parameters, 1);
+
         DBUG("Use '%s' as dependency parameter mKT.",
             dependency_parameter_mKT.name.c_str());
 
         // Dependency parameter for Q
-        auto& dependency_parameter_Q = ParameterLib::findParameter<double>(*dependency_parameter_q_name, parameters, 1); 
-        
+        auto& dependency_parameter_Q = ParameterLib::findParameter<double>(*dependency_parameter_q_name, parameters, 1);
+
         DBUG("Use '%s' as dependency parameter Q.",
             dependency_parameter_Q.name.c_str());
 
@@ -149,7 +149,7 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
     else
     {
        auto parameter_empty_ptr = new ParameterLib::ConstantParameter<double>("NoName", 0.0);
-        
+
         Lubby2MaterialProperties mp{
             kelvin_shear_modulus,     maxwell_shear_modulus,
             maxwell_bulk_modulus,     kelvin_viscosity,

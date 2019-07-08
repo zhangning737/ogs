@@ -139,7 +139,7 @@ struct LocalLubby2Properties
     double etaK = std::numeric_limits<double>::quiet_NaN();
     double etaM = std::numeric_limits<double>::quiet_NaN();
     double KM = std::numeric_limits<double>::quiet_NaN();
-    double GM = std::numeric_limits<double>::quiet_NaN(); 
+    double GM = std::numeric_limits<double>::quiet_NaN();
 };
 }  // namespace detail
 
