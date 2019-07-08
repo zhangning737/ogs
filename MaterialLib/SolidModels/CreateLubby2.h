@@ -11,6 +11,7 @@
 
 #include "CreateNewtonRaphsonSolverParameters.h"
 #include "ParameterLib/Utils.h"
+#include "ParameterLib/ConstantParameter.h"
 
 #include "Lubby2.h"
 
@@ -147,11 +148,15 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
     }
     else
     {
+       auto parameter_empty_ptr = new ParameterLib::ConstantParameter<double>("NoName", 0.0);
+        
         Lubby2MaterialProperties mp{
             kelvin_shear_modulus,     maxwell_shear_modulus,
             maxwell_bulk_modulus,     kelvin_viscosity,
             maxwell_viscosity,        dependency_parameter_mK,
-            dependency_parameter_mvK, dependency_parameter_mvM};
+            dependency_parameter_mvK, dependency_parameter_mvM,
+            *parameter_empty_ptr, *parameter_empty_ptr,
+            *parameter_empty_ptr, *parameter_empty_ptr};
 
         auto const& nonlinear_solver_config =
             //! \ogs_file_param{material__solid__constitutive_relation__Lubby2__nonlinear_solver}

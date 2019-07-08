@@ -190,12 +190,12 @@
         <parameter>
             <name>temperature_ic</name>
             <type>Constant</type>
-            <value>308</value>
+            <value>298</value>
         </parameter>
         <parameter>
             <name>temperature_bc</name>
             <type>Constant</type>
-            <value>308</value>
+            <value>298</value>
         </parameter>
     </parameters>
     <process_variables>
