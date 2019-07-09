@@ -272,11 +272,6 @@
             <order>1</order>
             <initial_condition>temperature_ic</initial_condition>
             <boundary_conditions>
-                <!-- <boundary_condition>
-                    <mesh>cube_1x1x1_geometry_top</mesh>
-                    <type>Dirichlet</type>
-                    <parameter>temperature_bc</parameter>
-                </boundary_condition> -->
                 <boundary_condition>
                     <geometrical_set>cube_1x1x1_geometry</geometrical_set>
                     <geometry>front</geometry>

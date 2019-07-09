@@ -94,13 +94,21 @@ std::unique_ptr<Lubby2<DisplacementDim>> createLubby2(
     DBUG("Use '%s' as dependency parameter mvM.",
          dependency_parameter_mvM.name.c_str());
 
-    auto const dependency_parameter_tref_name = config.getConfigParameterOptional<std::string>("dependency_parameter_tref");
+    auto const dependency_parameter_tref_name = config.getConfigParameterOptional<std::string>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_tref}
+        "dependency_parameter_tref");
 
-    auto const dependency_parameter_mgt_name = config.getConfigParameterOptional<std::string>("dependency_parameter_mgt");
+    auto const dependency_parameter_mgt_name = config.getConfigParameterOptional<std::string>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_mgt}
+        "dependency_parameter_mgt");
 
-    auto const dependency_parameter_mkt_name = config.getConfigParameterOptional<std::string>("dependency_parameter_mkt");
+    auto const dependency_parameter_mkt_name = config.getConfigParameterOptional<std::string>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_mkt}
+        "dependency_parameter_mkt");
 
-    auto const dependency_parameter_q_name = config.getConfigParameterOptional<std::string>("dependency_parameter_q");
+    auto const dependency_parameter_q_name = config.getConfigParameterOptional<std::string>(
+        //! \ogs_file_param_special{material__solid__constitutive_relation__Lubby2__dependency_parameter_q}
+        "dependency_parameter_q");
 
     if(dependency_parameter_tref_name && dependency_parameter_mgt_name && dependency_parameter_mkt_name && dependency_parameter_q_name)
     {
