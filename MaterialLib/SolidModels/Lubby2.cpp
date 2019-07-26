@@ -181,14 +181,9 @@ Lubby2<DisplacementDim>::integrateStress(
     }
 
     KelvinMatrix C =
-<<<<<<< HEAD
         tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM0,
                                            local_lubby2_properties.KM0,
-=======
-        tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM,
-                                           local_lubby2_properties.KM,
                                            dt,
->>>>>>> 43cecc288... update lubby2 inc
                                            linear_solver);
 
     // Hydrostatic part for the stress and the tangent.
