@@ -26,7 +26,7 @@ namespace Lubby2
 template <int DisplacementDim>
 Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
               Lubby2<DisplacementDim>::KelvinVectorSize>
-calculatedGdEBurgers()
+calculatedGdEBurgers(double const dt)
 {
     Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
                   Lubby2<DisplacementDim>::KelvinVectorSize>
@@ -36,16 +36,16 @@ calculatedGdEBurgers()
     dGdE.template topLeftCorner<Lubby2<DisplacementDim>::KelvinVectorSize,
                                 Lubby2<DisplacementDim>::KelvinVectorSize>()
         .diagonal()
-        .setConstant(-2);
+        .setConstant(-2/dt);
     return dGdE;
 }
 
 template <int DisplacementDim, typename LinearSolver>
 MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
-    double const GM0, double const KM0, LinearSolver const& linear_solver)
+    double const GM0, double const KM0, double const dt, LinearSolver const& linear_solver)
 {
     // Calculate dGdE for time step
-    auto const dGdE = calculatedGdEBurgers<DisplacementDim>();
+    auto const dGdE = calculatedGdEBurgers<DisplacementDim>(dt);
 
     // Consistent tangent from local Newton iteration of material
     // functionals.
@@ -181,8 +181,14 @@ Lubby2<DisplacementDim>::integrateStress(
     }
 
     KelvinMatrix C =
+<<<<<<< HEAD
         tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM0,
                                            local_lubby2_properties.KM0,
+=======
+        tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM,
+                                           local_lubby2_properties.KM,
+                                           dt,
+>>>>>>> 43cecc288... update lubby2 inc
                                            linear_solver);
 
     // Hydrostatic part for the stress and the tangent.
