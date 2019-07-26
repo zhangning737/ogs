@@ -187,10 +187,11 @@ Lubby2<DisplacementDim>::integrateStress(
                                            linear_solver);
 
     // Hydrostatic part for the stress and the tangent.
-    double const eps_i_trace = Invariants::trace(eps);
+    double const delta_eps_trace = Invariants::trace(eps - eps_prev);
+    double const sigma_trace_prev = Invariants::trace(sigma_prev);
     KelvinVector const sigma =
         local_lubby2_properties.GM0 * sigd_j +
-        local_lubby2_properties.KM0 * eps_i_trace * Invariants::identity2;
+        (local_lubby2_properties.KM0 * delta_eps_trace + sigma_trace_prev/3.)* Invariants::identity2;
     return {std::make_tuple(
         sigma,
         std::unique_ptr<
