@@ -36,7 +36,7 @@ calculatedGdEBurgers(double const dt)
     dGdE.template topLeftCorner<Lubby2<DisplacementDim>::KelvinVectorSize,
                                 Lubby2<DisplacementDim>::KelvinVectorSize>()
         .diagonal()
-        .setConstant(-2/dt);
+        .setConstant(-2./dt);
     return dGdE;
 }
 
@@ -96,9 +96,9 @@ Lubby2<DisplacementDim>::integrateStress(
     KelvinVector const epsd_i = P_dev * eps;
     KelvinVector const epsd_t = P_dev * eps_prev;
 
-    // initial guess as elastic predictor
+    // initial guess as elastic predictor. Note: dimensionless stresses!
     KelvinVector sigd_j = 2.0 * (epsd_i - state.eps_M_t - state.eps_K_t);
-    KelvinVector sigd_t = P_dev * sigma_prev;
+    KelvinVector sigd_t = P_dev * sigma_prev / local_lubby2_properties.GM0;
 
     // Calculate effective stress and update material properties
     double sig_eff = Invariants::equivalentStress(sigd_j);
@@ -216,7 +216,7 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
 {
     // calculate stress residual
     res.template segment<KelvinVectorSize>(0).noalias() =
-        (stress_curr - stress_t)/dt- 2. * ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t)- (strain_Max_curr - strain_Max_t))/dt;
+        (stress_curr - stress_t)/dt - 2./dt * ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) - (strain_Max_curr - strain_Max_t));
 
     // calculate Kelvin strain residual
     res.template segment<KelvinVectorSize>(KelvinVectorSize).noalias() =
@@ -245,18 +245,18 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
 
     // build G_11
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, 0).diagonal()
-        .setConstant(1/dt);
+        .setConstant(1./dt);
 
     // build G_12
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, KelvinVectorSize)
         .diagonal()
-        .setConstant(2/dt);
+        .setConstant(2./dt);
 
     // build G_13
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0,
                                                            2 * KelvinVectorSize)
         .diagonal()
-        .setConstant(2/dt);
+        .setConstant(2./dt);
 
     // build G_21
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize, 0)
