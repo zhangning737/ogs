@@ -15,6 +15,7 @@
 #include "MaterialLib/PhysicalConstant.h"
 
 #include "MechanicsBase.h"
+#include <iostream>
 
 namespace MaterialLib
 {
@@ -111,6 +112,7 @@ struct LocalLubby2Properties
             KM = KM0 + mKT * dT;
             GM = GM0 + mGT * dT;
         }
+        std::cout<< "s_eff = " << GM0_s_eff << ", \t" << "etaM="<<etaM<< ", \t" << "GM="<< GM<<std::endl;
     }
 
     void update(double const s_eff)

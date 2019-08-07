@@ -227,13 +227,13 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
     // calculate Kelvin strain residual
     res.template segment<KelvinVectorSize>(KelvinVectorSize).noalias() =
         1. / dt * (strain_Kel_curr - strain_Kel_t) -
-        1. / (2. * properties.etaK) * (properties.GM0 * stress_curr -
+        1. / (2. * properties.etaK) * (properties.GM * stress_curr -
                                        2. * properties.GK * strain_Kel_curr);
 
     // calculate Maxwell strain residual
     res.template segment<KelvinVectorSize>(2 * KelvinVectorSize).noalias() =
         1. / dt * (strain_Max_curr - strain_Max_t) -
-        0.5 * properties.GM0 / properties.etaM * stress_curr;
+        0.5 * properties.GM / properties.etaM * stress_curr;
 }
 
 template <int DisplacementDim>
@@ -268,16 +268,16 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
     // build G_21
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize, 0)
         .noalias() =
-        -0.5 * properties.GM0 / properties.etaK * KelvinMatrix::Identity();
+        -0.5 * properties.GM / properties.etaK * KelvinMatrix::Identity();
     if (s_eff > 0.)
     {
         KelvinVector const eps_K_aid =
             1. / (properties.etaK * properties.etaK) *
-            (properties.GM0 * sig_i - 2. * properties.GK * eps_K_i);
+            (properties.GM * sig_i - 2. * properties.GK * eps_K_i);
 
         KelvinVector const dG_K = 1.5 * _mp.mK(t, x)[0] * properties.GK *
-                                  properties.GM0 / s_eff * sig_i;
-        KelvinVector const dmu_vK = 1.5 * _mp.mvK(t, x)[0] * properties.GM0 *
+                                  properties.GM / s_eff * sig_i;
+        KelvinVector const dmu_vK = 1.5 * _mp.mvK(t, x)[0] * properties.GM *
                                     properties.etaK / s_eff * sig_i;
         Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize,
                                                                0)
@@ -297,14 +297,14 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(2 * KelvinVectorSize,
                                                            0)
         .noalias() =
-        -0.5 * properties.GM0 / properties.etaM * KelvinMatrix::Identity();
+        -0.5 * properties.GM / properties.etaM * KelvinMatrix::Identity();
     if (s_eff > 0.)
     {
-        KelvinVector const dmu_vM = 1.5 * _mp.mvM(t, x)[0] * properties.GM0 *
+        KelvinVector const dmu_vM = 1.5 * _mp.mvM(t, x)[0] * properties.GM *
                                     properties.etaM / s_eff * sig_i;
         Jac.template block<KelvinVectorSize, KelvinVectorSize>(
                2 * KelvinVectorSize, 0)
-            .noalias() += 0.5 * properties.GM0 /
+            .noalias() += 0.5 * properties.GM /
                           (properties.etaM * properties.etaM) * sig_i *
                           dmu_vM.transpose();
     }
