@@ -25,7 +25,7 @@ namespace Lubby2
 template <int DisplacementDim>
 Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
               Lubby2<DisplacementDim>::KelvinVectorSize>
-calculatedGdEBurgers(double const dt)
+calculatedGdEBurgers()
 {
     Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
                   Lubby2<DisplacementDim>::KelvinVectorSize>
@@ -35,17 +35,17 @@ calculatedGdEBurgers(double const dt)
     dGdE.template topLeftCorner<Lubby2<DisplacementDim>::KelvinVectorSize,
                                 Lubby2<DisplacementDim>::KelvinVectorSize>()
         .diagonal()
-        .setConstant(-2. / dt);
+        .setConstant(-2.);
     return dGdE;
 }
 
 template <int DisplacementDim, typename LinearSolver>
 MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
-    double const GM0, double const KM0, double const dt,
+    double const GM0, double const KM0,
     LinearSolver const& linear_solver)
 {
     // Calculate dGdE for time step
-    auto const dGdE = calculatedGdEBurgers<DisplacementDim>(dt);
+    auto const dGdE = calculatedGdEBurgers<DisplacementDim>();
 
     // Consistent tangent from local Newton iteration of material
     // functionals.
@@ -185,7 +185,6 @@ Lubby2<DisplacementDim>::integrateStress(
     KelvinMatrix C =
         tangentStiffnessA<DisplacementDim>(local_lubby2_properties.GM0,
                                            local_lubby2_properties.KM0,
-                                           dt,
                                            linear_solver);
 
     // Hydrostatic part for the stress and the tangent.
@@ -219,8 +218,8 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
 {
     // calculate stress residual
     res.template segment<KelvinVectorSize>(0).noalias() =
-        (stress_curr - stress_t) / dt -
-        2. / dt *
+        (stress_curr - stress_t) -
+        2. *
             ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) -
              (strain_Max_curr - strain_Max_t));
 
@@ -252,18 +251,18 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
     // build G_11
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, 0)
         .diagonal()
-        .setConstant(1. / dt);
+        .setConstant(1.);
 
     // build G_12
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, KelvinVectorSize)
         .diagonal()
-        .setConstant(2. / dt);
+        .setConstant(2.);
 
     // build G_13
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0,
                                                            2 * KelvinVectorSize)
         .diagonal()
-        .setConstant(2. / dt);
+        .setConstant(2.);
 
     // build G_21
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize, 0)
