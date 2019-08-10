@@ -41,8 +41,7 @@ calculatedGdEBurgers()
 
 template <int DisplacementDim, typename LinearSolver>
 MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
-    double const GM0, double const KM0,
-    LinearSolver const& linear_solver)
+    double const GM0, double const KM0, LinearSolver const& linear_solver)
 {
     // Calculate dGdE for time step
     auto const dGdE = calculatedGdEBurgers<DisplacementDim>();
@@ -219,9 +218,8 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
     // calculate stress residual
     res.template segment<KelvinVectorSize>(0).noalias() =
         (stress_curr - stress_t) -
-        2. *
-            ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) -
-             (strain_Max_curr - strain_Max_t));
+        2. * ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) -
+              (strain_Max_curr - strain_Max_t));
 
     // calculate Kelvin strain residual
     res.template segment<KelvinVectorSize>(KelvinVectorSize).noalias() =
