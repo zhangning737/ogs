@@ -41,7 +41,7 @@ calculatedGdEBurgers(double const dt)
 
 template <int DisplacementDim, typename LinearSolver>
 MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
-    double const GM0, double const KM0, double const dt,
+    double const GM, double const KM, double const dt,
     LinearSolver const& linear_solver)
 {
     // Calculate dGdE for time step
@@ -63,7 +63,7 @@ MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
     auto const& P_sph = Invariants::spherical_projection;
     auto const& P_dev = Invariants::deviatoric_projection;
 
-    KelvinMatrix C = GM0 * dzdE * P_dev + 3. * KM0 * P_sph;
+    KelvinMatrix C = GM * dzdE * P_dev + 3. * KM * P_sph;
     return C;
 };
 
@@ -95,15 +95,15 @@ Lubby2<DisplacementDim>::integrateStress(
     auto const& P_dev = Invariants::deviatoric_projection;
     KelvinVector const epsd_i = P_dev * eps;
     KelvinVector const epsd_t = P_dev * eps_prev;
-
     // initial guess as elastic predictor.
     KelvinVector sigd_j = 2.0 * (epsd_i - state.eps_M_t - state.eps_K_t);
-    // Note: sigd_t contains dimensionless stresses!
-    KelvinVector sigd_t = P_dev * sigma_prev / local_lubby2_properties.GM0;
-
+ 
     // Calculate effective stress and update material properties
     double sig_eff = Invariants::equivalentStress(sigd_j);
     local_lubby2_properties.update(sig_eff, T);
+    
+    // Note: sigd_t contains dimensionless stresses!
+    KelvinVector sigd_t = P_dev * sigma_prev / local_lubby2_properties.GM;
 
     using LocalJacobianMatrix =
         Eigen::Matrix<double, KelvinVectorSize * 3, KelvinVectorSize * 3,
@@ -234,6 +234,7 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
     res.template segment<KelvinVectorSize>(2 * KelvinVectorSize).noalias() =
         1. / dt * (strain_Max_curr - strain_Max_t) -
         0.5 * properties.GM / properties.etaM * stress_curr;
+        std::cout<< "etaM="<< properties.etaM << std::endl;
 }
 
 template <int DisplacementDim>

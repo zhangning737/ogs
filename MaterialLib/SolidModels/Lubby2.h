@@ -90,29 +90,35 @@ struct LocalLubby2Properties
           Tref(mp.Tref(t, x)[0]),
           mGT(mp.mGT(t, x)[0]),
           mKT(mp.mKT(t, x)[0]),
-          Q(mp.mKT(t, x)[0])
+          Q(mp.Q(t, x)[0])
     {
     }
 
     void update(double const s_eff, double const T)
     {
         double const dT(T - Tref);
-        double const GM0_s_eff = GM0 * s_eff;
-        GK = GK0 * std::exp(mK * GM0_s_eff);
-        etaK = etaK0 * std::exp(mvK * GM0_s_eff);
-        if (std::isnan(T))
+        if (!std::isnan(T))
         {
-            etaM = etaM0 * std::exp(mvM * GM0_s_eff);
-            KM = KM0;
-            GM = GM0;
+            KM = KM0 + mKT * dT;
+            GM = GM0 + mGT * dT; 
         }
         else
         {
-            etaM = etaM0 * std::exp(mvM * GM0_s_eff) * std::exp(Q * (-dT)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
-            KM = KM0 + mKT * dT;
-            GM = GM0 + mGT * dT;
+            KM = KM0;
+            GM = GM0;
+        }       
+        double const GM_s_eff = GM * s_eff;
+        GK = GK0 * std::exp(mK * GM_s_eff);
+        etaK = etaK0 * std::exp(mvK * GM_s_eff);
+        if (std::isnan(T))
+        {
+            etaM = etaM0 * std::exp(mvM * GM_s_eff);
         }
-        std::cout<< "s_eff = " << GM0_s_eff << ", \t" << "etaM="<<etaM<< ", \t" << "GM="<< GM<<std::endl;
+        else
+        {
+            etaM = etaM0 * std::exp(mvM * GM_s_eff) * std::exp(Q * (-dT)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
+        }
+        std::cout<< "dT = " << dT << ", \t" << "Q="<< Q << ", \t" << "GM_s_eff="<< GM_s_eff<< "etaM0 = "<< etaM0 << std::endl;
     }
 
     void update(double const s_eff)
@@ -226,6 +232,7 @@ public:
     {
     }
 
+//TODO: implement temperature-dependent version with corrected elastic properties
     double computeFreeEnergyDensity(
         double const t,
         ParameterLib::SpatialPosition const& x,
