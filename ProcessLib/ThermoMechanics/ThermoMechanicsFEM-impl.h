@@ -422,6 +422,7 @@ void ThermoMechanicsLocalAssembler<ShapeFunction, IntegrationMethod,
 
         auto& sigma = _ip_data[ip].sigma;
         auto const& sigma_prev = _ip_data[ip].sigma_prev;
+        auto const& sigma_neq = _ip_data[ip].sigma_neq;
 
         auto& eps = _ip_data[ip].eps;
         auto const& eps_prev = _ip_data[ip].eps_prev;
@@ -490,7 +491,7 @@ void ThermoMechanicsLocalAssembler<ShapeFunction, IntegrationMethod,
 
         auto const& b = _process_data.specific_body_force;
         local_rhs.noalias() -=
-            (B.transpose() * sigma - N_u.transpose() * rho_s * b) * w;
+            (B.transpose() * (sigma - sigma_neq) - N_u.transpose() * rho_s * b) * w;
     }
 }
 

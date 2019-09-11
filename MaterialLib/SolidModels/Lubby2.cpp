@@ -234,7 +234,6 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
     res.template segment<KelvinVectorSize>(2 * KelvinVectorSize).noalias() =
         1. / dt * (strain_Max_curr - strain_Max_t) -
         0.5 * properties.GM / properties.etaM * stress_curr;
-        std::cout<< "etaM="<< properties.etaM << std::endl;
 }
 
 template <int DisplacementDim>

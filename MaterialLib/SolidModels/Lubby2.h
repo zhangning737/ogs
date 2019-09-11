@@ -118,7 +118,7 @@ struct LocalLubby2Properties
         {
             etaM = etaM0 * std::exp(mvM * GM_s_eff) * std::exp(Q * (-dT)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
         }
-        std::cout<< "dT = " << dT << ", \t" << "Q="<< Q << ", \t" << "GM_s_eff="<< GM_s_eff<< "etaM0 = "<< etaM0 << std::endl;
+        //std::cout<< "dT = " << dT << ", \t" << "Q="<< Q << ", \t" << "GM_s_eff="<< GM_s_eff<< "etaM0 = "<< etaM0 << std::endl;
     }
 
     void update(double const s_eff)
