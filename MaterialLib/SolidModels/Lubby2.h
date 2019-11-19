@@ -12,8 +12,10 @@
 #include "MathLib/KelvinVector.h"
 #include "NumLib/NewtonRaphson.h"
 #include "ParameterLib/Parameter.h"
+#include "MaterialLib/PhysicalConstant.h"
 
 #include "MechanicsBase.h"
+#include <iostream>
 
 namespace MaterialLib
 {
@@ -34,7 +36,11 @@ struct Lubby2MaterialProperties
                              P const& etaM0_,
                              P const& mK_,
                              P const& mvK_,
-                             P const& mvM_)
+                             P const& mvM_,
+                             P const& Tref_,
+                             P const& mGT_,
+                             P const& mKT_,
+                             P const& Q_)
         : GK0(GK0_),
           GM0(GM0_),
           KM0(KM0_),
@@ -42,7 +48,11 @@ struct Lubby2MaterialProperties
           etaM0(etaM0_),
           mK(mK_),
           mvK(mvK_),
-          mvM(mvM_)
+          mvM(mvM_),
+          Tref(Tref_),
+          mGT(mGT_),
+          mKT(mKT_),
+          Q(Q_)
     {
     }
 
@@ -55,6 +65,10 @@ struct Lubby2MaterialProperties
     P const& mK;
     P const& mvK;
     P const& mvM;
+    P const& Tref;
+    P const& mGT;
+    P const& mKT;
+    P const& Q;
 };
 
 namespace detail
@@ -72,8 +86,39 @@ struct LocalLubby2Properties
           etaM0(mp.etaM0(t, x)[0]),
           mK(mp.mK(t, x)[0]),
           mvK(mp.mvK(t, x)[0]),
-          mvM(mp.mvM(t, x)[0])
+          mvM(mp.mvM(t, x)[0]),
+          Tref(mp.Tref(t, x)[0]),
+          mGT(mp.mGT(t, x)[0]),
+          mKT(mp.mKT(t, x)[0]),
+          Q(mp.Q(t, x)[0])
     {
+    }
+
+    void update(double const s_eff, double const T)
+    {
+        double const dT(T - Tref);
+        if (!std::isnan(T))
+        {
+            KM = KM0 + mKT * dT;
+            GM = GM0 + mGT * dT; 
+        }
+        else
+        {
+            KM = KM0;
+            GM = GM0;
+        }       
+        double const GM_s_eff = GM * s_eff;
+        GK = GK0 * std::exp(mK * GM_s_eff);
+        etaK = etaK0 * std::exp(mvK * GM_s_eff);
+        if (std::isnan(T))
+        {
+            etaM = etaM0 * std::exp(mvM * GM_s_eff);
+        }
+        else
+        {
+            etaM = etaM0 * std::exp(mvM * GM_s_eff) * std::exp(Q * (-dT)/ (MaterialLib::PhysicalConstant::IdealGasConstant * T * Tref));
+        }
+        //std::cout<< "dT = " << dT << ", \t" << "Q="<< Q << ", \t" << "GM_s_eff="<< GM_s_eff<< "etaM0 = "<< etaM0 << std::endl;
     }
 
     void update(double const s_eff)
@@ -92,11 +137,17 @@ struct LocalLubby2Properties
     double const mK;
     double const mvK;
     double const mvM;
+    double const Tref;
+    double const mGT;
+    double const mKT;
+    double const Q;
 
     // Solution dependent values.
     double GK = std::numeric_limits<double>::quiet_NaN();
     double etaK = std::numeric_limits<double>::quiet_NaN();
     double etaM = std::numeric_limits<double>::quiet_NaN();
+    double KM = std::numeric_limits<double>::quiet_NaN();
+    double GM = std::numeric_limits<double>::quiet_NaN();
 };
 }  // namespace detail
 
@@ -187,6 +238,7 @@ public:
     {
     }
 
+//TODO: implement temperature-dependent version with corrected elastic properties
     double computeFreeEnergyDensity(
         double const t,
         ParameterLib::SpatialPosition const& x,
