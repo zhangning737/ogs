@@ -1,10 +1,10 @@
 /**
- * \file
  * \copyright
  * Copyright (c) 2012-2019, OpenGeoSys Community (http://www.opengeosys.org)
  *            Distributed under a Modified BSD License.
  *              See accompanying file LICENSE.txt or
  *              http://www.opengeosys.org/project/license
+ *
  */
 
 #include "Lubby2.h"
@@ -25,7 +25,7 @@ namespace Lubby2
 template <int DisplacementDim>
 Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
               Lubby2<DisplacementDim>::KelvinVectorSize>
-calculatedGdEBurgers()
+calculatedGdEBurgers(double const dt)
 {
     Eigen::Matrix<double, Lubby2<DisplacementDim>::JacobianResidualSize,
                   Lubby2<DisplacementDim>::KelvinVectorSize>
@@ -35,7 +35,7 @@ calculatedGdEBurgers()
     dGdE.template topLeftCorner<Lubby2<DisplacementDim>::KelvinVectorSize,
                                 Lubby2<DisplacementDim>::KelvinVectorSize>()
         .diagonal()
-        .setConstant(-2.);
+        .setConstant(-2. / dt);
     return dGdE;
 }
 
@@ -45,7 +45,7 @@ MathLib::KelvinVector::KelvinMatrixType<DisplacementDim> tangentStiffnessA(
     LinearSolver const& linear_solver)
 {
     // Calculate dGdE for time step
-    auto const dGdE = calculatedGdEBurgers<DisplacementDim>();
+    auto const dGdE = calculatedGdEBurgers<DisplacementDim>(dt);
 
     // Consistent tangent from local Newton iteration of material
     // functionals.
@@ -219,9 +219,10 @@ void Lubby2<DisplacementDim>::calculateResidualBurgers(
 {
     // calculate stress residual
     res.template segment<KelvinVectorSize>(0).noalias() =
-        (stress_curr - stress_t) -
-        2. * ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) -
-              (strain_Max_curr - strain_Max_t));
+        (stress_curr - stress_t) / dt -
+        2. / dt *
+            ((strain_curr - strain_t) - (strain_Kel_curr - strain_Kel_t) -
+             (strain_Max_curr - strain_Max_t));
 
     // calculate Kelvin strain residual
     res.template segment<KelvinVectorSize>(KelvinVectorSize).noalias() =
@@ -251,18 +252,18 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
     // build G_11
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, 0)
         .diagonal()
-        .setConstant(1.);
+        .setConstant(1. / dt);
 
     // build G_12
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0, KelvinVectorSize)
         .diagonal()
-        .setConstant(2.);
+        .setConstant(2. / dt);
 
     // build G_13
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(0,
                                                            2 * KelvinVectorSize)
         .diagonal()
-        .setConstant(2.);
+        .setConstant(2. / dt);
 
     // build G_21
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize, 0)
@@ -280,15 +281,15 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
                                     properties.etaK / s_eff * sig_i;
         Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize,
                                                                0)
-            .noalias() += 0.5 * dt * eps_K_aid * dmu_vK.transpose() +
-                          dt / properties.etaK * eps_K_i * dG_K.transpose();
+            .noalias() += 0.5 * eps_K_aid * dmu_vK.transpose() +
+                          1. / properties.etaK * eps_K_i * dG_K.transpose();
     }
 
     // build G_22
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(KelvinVectorSize,
                                                            KelvinVectorSize)
         .diagonal()
-        .setConstant(1. + dt * properties.GK / properties.etaK);
+        .setConstant(1. / dt + properties.GK / properties.etaK);
 
     // nothing to do for G_23
 
@@ -314,7 +315,7 @@ void Lubby2<DisplacementDim>::calculateJacobianBurgers(
     Jac.template block<KelvinVectorSize, KelvinVectorSize>(2 * KelvinVectorSize,
                                                            2 * KelvinVectorSize)
         .diagonal()
-        .setConstant(1.);
+        .setConstant(1. / dt);
 }
 
 template class Lubby2<2>;
